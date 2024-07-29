@@ -18,6 +18,7 @@ from .utilities import slvs_entity_pointer, tag_update
 from .constants import CURVE_RESOLUTION
 from ..utilities.constants import HALF_TURN, FULL_TURN
 from ..utilities.draw import coords_arc_2d
+from ..utilities.geometry import generate_dash_positions
 from .utilities import (
     get_bezier_curve_midpoint_positions,
     create_bezier_curve,
@@ -76,7 +77,9 @@ class SlvsCircle(Entity2D, PropertyGroup):
         mat = self.wp.matrix_basis @ mat_local
         coords = [(mat @ Vector((*co, 0)))[:] for co in coords]
 
-        kwargs = {"pos": coords}
+        dash_positions = generate_dash_positions(coords)
+
+        kwargs = {"pos": coords, "dash_pos": dash_positions}
         self._batch = batch_for_shader(self._shader, "LINE_STRIP", kwargs)
         self.is_dirty = False
 

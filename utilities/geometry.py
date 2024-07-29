@@ -1,6 +1,6 @@
 import math
 from statistics import mean
-from typing import Tuple
+from typing import Iterable, List, Tuple
 
 import mathutils
 from mathutils import Vector
@@ -108,3 +108,13 @@ def intersect_line_sphere_2d(
     if len(intersections) == 2 and abs(discriminant) <= tangent_tol:
         return [intersections[0]]
     return intersections
+
+def generate_dash_positions(coords: Iterable[Vector]) -> List[float]:
+    prev = Vector(next(iter(coords), None))
+    total = 0
+    dash_positions = []
+    for co in coords:
+        total += (Vector(co) - prev).length
+        dash_positions.append(total)
+        prev = Vector(co)
+    return dash_positions

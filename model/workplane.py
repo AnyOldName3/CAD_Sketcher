@@ -13,6 +13,7 @@ from .. import global_data
 from ..utilities.draw import draw_rect_2d
 from ..shaders import Shaders
 from ..utilities import preferences
+from ..utilities.geometry import generate_dash_positions
 from ..solver import Solver
 from .base_entity import SlvsGenericEntity
 from .utilities import slvs_entity_pointer
@@ -49,9 +50,11 @@ class SlvsWorkplane(SlvsGenericEntity, PropertyGroup):
         coords = draw_rect_2d(0, 0, self.size, self.size)
         coords = [(Vector(co))[:] for co in coords]
 
+        dash_positions = generate_dash_positions(coords)
+
         indices = ((0, 1), (1, 2), (2, 3), (3, 0))
         self._batch = batch_for_shader(
-            self._shader, "LINES", {"pos": coords}, indices=indices
+            self._shader, "LINES", {"pos": coords, "dash_pos": dash_positions}, indices=indices
         )
         self.is_dirty = False
 

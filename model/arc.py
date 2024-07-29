@@ -18,6 +18,7 @@ from .constants import CURVE_RESOLUTION
 from ..utilities.constants import HALF_TURN, FULL_TURN, QUARTER_TURN
 from ..utilities.math import range_2pi, pol2cart
 from ..utilities.draw import coords_arc_2d
+from ..utilities.geometry import generate_dash_positions
 from .utilities import (
     get_connection_point,
     get_bezier_curve_midpoint_positions,
@@ -102,7 +103,9 @@ class SlvsArc(Entity2D, PropertyGroup):
             mat = self.wp.matrix_basis @ mat_local
             coords = [(mat @ Vector((*co, 0)))[:] for co in coords]
 
-        kwargs = {"pos": coords}
+        dash_positions = generate_dash_positions(coords)
+
+        kwargs = {"pos": coords, "dash_pos": dash_positions}
         self._batch = batch_for_shader(self._shader, "LINE_STRIP", kwargs)
         self.is_dirty = False
 

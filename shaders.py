@@ -20,15 +20,14 @@ class Shaders:
         void main() {
            gl_Position = ModelViewProjectionMatrix * vec4(pos.xyz, 1.0f);
 
-           vec2 ssPos = vec2(gl_Position.xy / gl_Position.w);
-           stipple_start = stipple_pos = ssPos;
+           stipple_pos = dash_pos;
         }
     """
     base_fragment_shader_3d = """
         void main() {
 
-            float distance_along_line = distance(stipple_pos, stipple_start);
-            float normalized_distance = fract(distance_along_line / dash_width);
+            float scale = sqrt(dFdx(stipple_pos) * dFdx(stipple_pos) + dFdy(stipple_pos) * dFdy(stipple_pos));
+            float normalized_distance = fract(stipple_pos / (dash_width * scale * 1000));
 
             if (dashed == true) {
                 if (normalized_distance <= dash_factor) {
@@ -49,8 +48,7 @@ class Shaders:
     def get_base_shader_3d_info(cls):
 
         vert_out = GPUStageInterfaceInfo("stipple_pos_interface")
-        vert_out.no_perspective("VEC2", "stipple_pos")
-        vert_out.flat("VEC2", "stipple_start")
+        vert_out.smooth("FLOAT", "stipple_pos")
 
         # NOTE: How to set default values?
 
@@ -62,6 +60,7 @@ class Shaders:
         # shader_info.push_constant("VEC2", "Viewport")
         shader_info.push_constant("BOOL", "dashed")
         shader_info.vertex_in(0, "VEC3", "pos")
+        shader_info.vertex_in(1, "FLOAT", "dash_pos")
         shader_info.vertex_out(vert_out)
         shader_info.fragment_out(0, "VEC4", "fragColor")
 

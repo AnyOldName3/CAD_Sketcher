@@ -9,7 +9,7 @@ from bpy.utils import register_classes_factory
 from ..solver import Solver
 from .base_entity import SlvsGenericEntity
 from .utilities import slvs_entity_pointer
-from ..utilities.geometry import nearest_point_line_line
+from ..utilities.geometry import nearest_point_line_line, generate_dash_positions
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +47,9 @@ class SlvsLine3D(SlvsGenericEntity, PropertyGroup):
         p1, p2 = self.p1.location, self.p2.location
         coords = (p1, p2)
 
-        kwargs = {"pos": coords}
+        dash_positions = generate_dash_positions(coords)
+
+        kwargs = {"pos": coords, "dash_pos": dash_positions}
         self._batch = batch_for_shader(self._shader, "LINES", kwargs)
 
         self.is_dirty = False

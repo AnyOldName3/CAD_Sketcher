@@ -27,7 +27,8 @@ def draw_callback_px(self, context):
     end = self.mouse_pos
 
     box_path = (start, (end.x, start.y), end, (start.x, end.y), start)
-    batch = batch_for_shader(shader, "LINE_STRIP", {"pos": box_path})
+    dash_dummy = [0.0] * len(box_path)
+    batch = batch_for_shader(shader, "LINE_STRIP", {"pos": box_path, "dash_pos": dash_dummy})
     shader.bind()
     shader.uniform_float("color", (0.0, 0.0, 0.0, 0.5))
     batch.draw(shader)
